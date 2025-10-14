@@ -11,7 +11,7 @@ COPY artifacts/rke2.linux-${TARGETARCH}.tar.gz .
 RUN set -x \
  && grep "rke2.linux-${TARGETARCH}.tar.gz" sha256sum-${TARGETARCH}.txt | sha256sum -c \
  && tar -xzf rke2.linux-${TARGETARCH}.tar.gz \
- && mv -vf rke2.linux-${TARGETARCH} /opt/rke2 \
+ && mv -vf bin/rke2 /opt/rke2 \
  && chmod +x /opt/rke2 \
  && file /opt/rke2
 
