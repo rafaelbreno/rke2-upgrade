@@ -38,6 +38,7 @@ jobs:
         image: "rke2-upgrade"
         tag: ${{ env.GIT_TAG }}-${{ matrix.arch }}
         make-target: push-image
+        platforms: ${{ matrix.os }}/${{ matrix.arch }}
 
         public-repo: rafiusky
         public-username: ${{ secrets.DOCKER_USERNAME }}
