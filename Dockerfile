@@ -3,15 +3,18 @@ FROM ${ALPINE} AS verify
 ARG TARGETARCH
 ARG TAG
 WORKDIR /verify
-ADD https://github.com/rancher/rke2/releases/download/${TAG}/sha256sum-${TARGETARCH}.txt .
+
+# Copy the pre-downloaded files from the local directory (those files are retrieved by scripts/download)
+COPY artifacts/sha256sum-${TARGETARCH}.txt .
+COPY artifacts/rke2.linux-${TARGETARCH}.tar.gz .
+
+RUN apk --no-cache add file
+
+# Verify the checksum and extract the binary
 RUN set -x \
-  && apk --no-cache add \
-    curl \
-    file
-RUN export ARTIFACT="rke2.linux-${TARGETARCH}" \
- && curl --output ${ARTIFACT}  --fail --location https://github.com/rancher/rke2/releases/download/${TAG}/${ARTIFACT} \
- && grep "rke2.linux-${TARGETARCH}$" sha256sum-${TARGETARCH}.txt | sha256sum -c \
- && mv -vf ${ARTIFACT} /opt/rke2 \
+ && grep "rke2.linux-${TARGETARCH}.tar.gz" sha256sum-${TARGETARCH}.txt | sha256sum -c \
+ && tar -xzf rke2.linux-${TARGETARCH}.tar.gz \
+ && mv -vf bin/rke2 /opt/rke2 \
  && chmod +x /opt/rke2 \
  && file /opt/rke2
 
@@ -29,7 +32,7 @@ LABEL org.opencontainers.image.url="https://hub.docker.com/r/rancher/rke2-upgrad
 LABEL org.opencontainers.image.source="https://github.com/rancher/rke2-upgrade"
 LABEL org.opencontainers.image.base.name="${ALPINE}"
 RUN apk --no-cache add \
-   jq libselinux-utils bash
+    jq libselinux-utils bash
 COPY --from=verify /opt/rke2 /opt/rke2
 COPY scripts/upgrade.sh /bin/upgrade.sh
 COPY scripts/semver-parse.sh /bin/semver-parse.sh
