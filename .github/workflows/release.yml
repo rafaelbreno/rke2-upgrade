@@ -39,7 +39,7 @@ jobs:
         tag: ${{ env.GIT_TAG }}-${{ matrix.arch }}
         make-target: push-image
 
-        public-repo: rancher
+        public-repo: rafiusky
         public-username: ${{ secrets.DOCKER_USERNAME }}
         public-password: ${{ secrets.DOCKER_PASSWORD }}
         push-to-prime: false
@@ -58,7 +58,7 @@ jobs:
           tag: ${{ github.ref_name }}
           make-target: publish-manifest
 
-          public-repo: rancher
+          public-repo: rafiusky
           public-username: ${{ secrets.DOCKER_USERNAME }}
           public-password: ${{ secrets.DOCKER_PASSWORD }}
           push-to-prime: false

@@ -13,7 +13,7 @@ TAG ?= ${TAG}
 
 export DOCKER_BUILDKIT?=1
 
-REPO ?= rancher
+REPO ?= rafiusky
 IMAGE = $(REPO)/rke2-upgrade:$(TAG)
 
 BUILD_OPTS = \
