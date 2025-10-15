@@ -1,6 +1,7 @@
 ARG ALPINE=alpine:3.20
 FROM ${ALPINE} AS verify
 ARG TARGETARCH
+ARG TAG
 WORKDIR /verify
 
 # Copy the pre-downloaded files from the local directory (those files are retrieved by scripts/download)
