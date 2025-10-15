@@ -7,6 +7,8 @@ WORKDIR /verify
 COPY artifacts/sha256sum-${TARGETARCH}.txt .
 COPY artifacts/rke2.linux-${TARGETARCH}.tar.gz .
 
+RUN apk --no-cache add file
+
 # Verify the checksum and extract the binary
 RUN set -x \
  && grep "rke2.linux-${TARGETARCH}.tar.gz" sha256sum-${TARGETARCH}.txt | sha256sum -c \
