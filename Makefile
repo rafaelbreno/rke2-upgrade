@@ -34,7 +34,7 @@ push-image: download-assets
 
 .PHONY: publish-manifest
 publish-manifest:
-	./scripts/publish-manifest
+	IMAGE=$(IMAGE) ./scripts/publish-manifest
 
 .PHONY: download-assets
 download-assets: 
