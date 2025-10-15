@@ -10,11 +10,13 @@ ifndef TARGET_PLATFORMS
 endif
 
 TAG ?= ${TAG}
+# sanitize the tag
+DOCKER_TAG := $(shell echo $(TAG) | sed 's/+/-/g')
 
 export DOCKER_BUILDKIT?=1
 
 REPO ?= rafiusky
-IMAGE = $(REPO)/rke2-upgrade:$(TAG)
+IMAGE = $(REPO)/rke2-upgrade:$(DOCKER_TAG)
 
 BUILD_OPTS = \
 	--platform=$(TARGET_PLATFORMS) \
