@@ -38,4 +38,4 @@ publish-manifest:
 
 .PHONY: download-assets
 download-assets: 
-	./scripts/download
+	IMAGE=$(IMAGE) ./scripts/download
