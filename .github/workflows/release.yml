@@ -56,6 +56,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Change Tag
+        run: |
+          echo "GIT_TAG=$(echo "${{ github.ref_name }}" | sed -e 's/+/-/g')" >> "$GITHUB_ENV"
+
       - name: Publish Manifest - Docker
         uses: rancher/ecm-distro-tools/actions/publish-image@master
         with:
@@ -69,4 +73,4 @@ jobs:
           push-to-prime: false
 
       - name: Inspect Docker image
-        run: docker buildx imagetools inspect ${{ env.REPO }}/${{ env.IMAGE }}:${{ env.VERSION }}
+        run: docker buildx imagetools inspect ${{ env.REPO }}/${{ env.IMAGE }}:${{ env.GIT_TAG }}
