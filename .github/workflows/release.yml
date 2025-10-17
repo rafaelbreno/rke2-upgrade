@@ -9,7 +9,7 @@ permissions:
 
 env:
   IMAGE: "rke2-upgrade"
-  REPO: "rancher"
+  REPO: "rafiusky"
 
 jobs:
   build-linux:
