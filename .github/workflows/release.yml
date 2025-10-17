@@ -2,10 +2,14 @@ on:
   release:
     types: [published]
 
-name: tag
+name: Release Build and Push
 permissions:
   contents: read
   id-token: write # needed for the Vault authentication
+
+env:
+  IMAGE: "rke2-upgrade"
+  REPO: "rancher"
 
 jobs:
   build-linux:
@@ -35,12 +39,12 @@ jobs:
         ARCH: ${{ matrix.arch }}
         OS: ${{ matrix.os }}
       with:
-        image: "rke2-upgrade"
+        image: ${{ env.IMAGE }}
         tag: ${{ env.GIT_TAG }}-${{ matrix.arch }}
         make-target: push-image
         platforms: ${{ matrix.os }}/${{ matrix.arch }}
 
-        public-repo: rafiusky
+        public-repo: ${{ env.REPO }}
         public-username: ${{ secrets.DOCKER_USERNAME }}
         public-password: ${{ secrets.DOCKER_PASSWORD }}
         push-to-prime: false
@@ -55,14 +59,14 @@ jobs:
       - name: Publish Manifest - Docker
         uses: rancher/ecm-distro-tools/actions/publish-image@master
         with:
-          image: "k3s-upgrade"
+          image: ${{ env.IMAGE }}
           tag: ${{ github.ref_name }}
           make-target: publish-manifest
 
-          public-repo: rafiusky
+          public-repo: ${{ env.REPO }}
           public-username: ${{ secrets.DOCKER_USERNAME }}
           public-password: ${{ secrets.DOCKER_PASSWORD }}
           push-to-prime: false
 
       - name: Inspect Docker image
-        run: docker buildx imagetools inspect ${{ env.IMAGE }}:${{ env.VERSION }}
+        run: docker buildx imagetools inspect ${{ env.REPO }}/${{ env.IMAGE }}:${{ env.VERSION }}
