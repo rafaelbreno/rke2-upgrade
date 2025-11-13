@@ -42,6 +42,8 @@ jobs:
         tag: ${{ env.GIT_TAG }}-${{ env.ARCH }}
         make-target: push-image
 
+        platforms: ${{ matrix.os }}/${{ matrix.arch }}
+
         push-to-public: true
         public-repo: ${{ secrets.DOCKER_USERNAME }}
         public-username: ${{ secrets.DOCKER_USERNAME }}
