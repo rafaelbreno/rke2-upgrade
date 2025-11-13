@@ -56,6 +56,8 @@ jobs:
         tag: ${{ env.GIT_TAG }}-${{ env.ARCH }}
         make-target: push-image
 
+        platforms: ${{ matrix.os }}/${{ matrix.arch }}
+
         push-to-public: false
 
         prime-repo: ${{ env.REPO }}
@@ -75,6 +77,8 @@ jobs:
         image: ${{ env.IMAGE }}
         tag: ${{ env.GIT_TAG }}-${{ env.ARCH }}
         make-target: push-image
+
+        platforms: ${{ matrix.os }}/${{ matrix.arch }}
 
         push-to-public: false
 
