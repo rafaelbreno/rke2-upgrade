@@ -30,7 +30,7 @@ jobs:
         echo "GIT_TAG=$(echo "${{ github.ref_name }}" | sed -e 's/+/-/g')" >> "$GITHUB_ENV"
 
     - name: Publish Image - Prime
-      uses: rancher/ecm-distro-tools/actions/publish-image@master
+      uses: rancher/ecm-distro-tools/actions/publish-image@publish-image-iid
       if: ${{ !contains(github.ref_name, '-rc') }}
       env:
         TAG: ${{ github.ref_name }}
@@ -63,7 +63,7 @@ jobs:
           echo "GIT_TAG=$(echo "${{ github.ref_name }}" | sed -e 's/+/-/g')" >> "$GITHUB_ENV"
 
       - name: Publish Image - Prime
-        uses: rancher/ecm-distro-tools/actions/publish-image@master
+        uses: rancher/ecm-distro-tools/actions/publish-image@publish-image-iid
         if: ${{ !contains(github.ref_name, '-rc') }}
         with:
           image: ${{ env.IMAGE }}
