@@ -29,42 +29,6 @@ jobs:
         echo "OS=${{ matrix.os }}"     >> "$GITHUB_ENV"
         echo "GIT_TAG=$(echo "${{ github.ref_name }}" | sed -e 's/+/-/g')" >> "$GITHUB_ENV"
 
-    - name: "Read secrets"
-      uses: rancher-eio/read-vault-secrets@main
-      with:
-        secrets: |
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials username | DOCKER_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials password | DOCKER_PASSWORD ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials primeribs |  PRIME_RIBS ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials registry |  PRIME_REGISTRY ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials username |  PRIME_REGISTRY_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password |  PRIME_REGISTRY_PASSWORD ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-stg-registry/credentials registry |  PRIME_STAGING_REGISTRY ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-stg-registry/credentials username |  PRIME_STAGING_REGISTRY_USERNAME ;
-          secret/data/github/repo/${{ github.repository }}/rancher-prime-stg-registry/credentials password |  PRIME_STAGING_REGISTRY_PASSWORD ;
-
-    - name: Publish Image - Staging
-      uses: rancher/ecm-distro-tools/actions/publish-image@master
-      if: ${{ contains(github.ref_name, '-rc') }}
-      env:
-        TAG: ${{ github.ref_name }}
-        ARCH: ${{ matrix.arch }}
-        OS: ${{ matrix.os }}
-        PRIME_RIBS: ${{ env.PRIME_RIBS }}
-      with:
-        image: ${{ env.IMAGE }}
-        tag: ${{ env.GIT_TAG }}-${{ env.ARCH }}
-        make-target: push-image
-
-        platforms: ${{ matrix.os }}/${{ matrix.arch }}
-
-        push-to-public: false
-
-        prime-repo: ${{ env.REPO }}
-        prime-registry: ${{ env.PRIME_STAGING_REGISTRY }}
-        prime-username: ${{ env.PRIME_STAGING_REGISTRY_USERNAME }}
-        prime-password: ${{ env.PRIME_STAGING_REGISTRY_PASSWORD }}
-
     - name: Publish Image - Prime
       uses: rancher/ecm-distro-tools/actions/publish-image@master
       if: ${{ !contains(github.ref_name, '-rc') }}
@@ -82,10 +46,10 @@ jobs:
 
         push-to-public: false
 
-        prime-repo: ${{ env.REPO }}
-        prime-registry: ${{ env.PRIME_REGISTRY }}
-        prime-username: ${{ env.PRIME_REGISTRY_USERNAME }}
-        prime-password: ${{ env.PRIME_REGISTRY_PASSWORD }}
+        prime-repo: ${{ secrets.DOCKER_USERNAME }}
+        prime-registry: docker.io
+        prime-username: ${{ secrets.DOCKER_USERNAME }}
+        prime-password: ${{ secrets.DOCKER_PASSWORD }}
 
   create-manifest:
     runs-on: ubuntu-latest
@@ -94,42 +58,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Load secrets from Vault
-        uses: rancher-eio/read-vault-secrets@main
-        with:
-          secrets: |
-            secret/data/github/repo/${{ github.repository }}/dockerhub/rancher/credentials username | DOCKER_USERNAME ;
-            secret/data/github/repo/${{ github.repository }}/dockerhub/rancher/credentials password | DOCKER_PASSWORD ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials primeribs |  PRIME_RIBS ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials registry |  PRIME_REGISTRY ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials username |  PRIME_REGISTRY_USERNAME ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password |  PRIME_REGISTRY_PASSWORD ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-stg-registry/credentials registry |  PRIME_STAGING_REGISTRY ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-stg-registry/credentials username |  PRIME_STAGING_REGISTRY_USERNAME ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-stg-registry/credentials password |  PRIME_STAGING_REGISTRY_PASSWORD ;
-
       - name: Change Tag
         run: |
           echo "GIT_TAG=$(echo "${{ github.ref_name }}" | sed -e 's/+/-/g')" >> "$GITHUB_ENV"
-
-      - name: Publish Manifest - Staging
-        uses: rancher/ecm-distro-tools/actions/publish-image@master
-        if: ${{ contains(github.ref_name, '-rc') }}
-        with:
-          image: ${{ env.IMAGE }}
-          tag: ${{ env.GIT_TAG }}
-          make-target: publish-manifest
-
-          push-to-public: false
-
-          prime-repo: ${{ env.REPO }}
-          prime-registry: ${{ env.PRIME_STAGING_REGISTRY }}
-          prime-username: ${{ env.PRIME_STAGING_REGISTRY_USERNAME }}
-          prime-password: ${{ env.PRIME_STAGING_REGISTRY_PASSWORD }}
-
-      - name: Inspect Staging image
-        if: ${{ contains(github.ref_name, '-rc') }}
-        run: docker buildx imagetools inspect ${{ env.PRIME_STAGING_REGISTRY }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ env.GIT_TAG }}
 
       - name: Publish Image - Prime
         uses: rancher/ecm-distro-tools/actions/publish-image@master
@@ -141,11 +72,11 @@ jobs:
 
           push-to-public: false
 
-          prime-repo: ${{ env.REPO }}
-          prime-registry: ${{ env.PRIME_REGISTRY }}
-          prime-username: ${{ env.PRIME_REGISTRY_USERNAME }}
-          prime-password: ${{ env.PRIME_REGISTRY_PASSWORD }}
+          prime-repo: ${{ secrets.DOCKER_USERNAME }}
+          prime-registry: docker.io
+          prime-username: ${{ secrets.DOCKER_USERNAME }}
+          prime-password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Inspect Prime image
         if: ${{ !contains(github.ref_name, '-rc') }}
-        run: docker buildx imagetools inspect ${{ env.PRIME_REGISTRY }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ env.GIT_TAG }}
+        run: docker buildx imagetools inspect docker.io/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}:${{ env.GIT_TAG }}
