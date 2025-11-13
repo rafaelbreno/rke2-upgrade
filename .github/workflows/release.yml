@@ -79,4 +79,4 @@ jobs:
 
       - name: Inspect Prime image
         if: ${{ !contains(github.ref_name, '-rc') }}
-        run: docker buildx imagetools inspect ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ env.GIT_TAG }}
+        run: docker buildx imagetools inspect ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}:${{ env.GIT_TAG }}
