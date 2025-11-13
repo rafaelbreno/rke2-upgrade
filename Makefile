@@ -10,6 +10,7 @@ ifndef TARGET_PLATFORMS
 endif
 
 TAG ?= ${TAG}
+PRIME_RIBS ?= ${PRIME_RIBS}
 # sanitize the tag
 DOCKER_TAG := $(shell echo $(TAG) | sed 's/+/-/g')
 
@@ -40,4 +41,4 @@ publish-manifest:
 
 .PHONY: download-assets
 download-assets: 
-	./scripts/download
+	PRIME_RIBS=$(PRIME_RIBS) ./scripts/download
